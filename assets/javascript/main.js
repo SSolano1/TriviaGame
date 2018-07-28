@@ -32,7 +32,7 @@ var questions = [{
     correctAnswer: "Abu",
     image:"assets/images/abu.gif"
   }, {
-    question: "What character is the movie First Blodd centered around",
+    question: "What character is the movie First Blood centered around",
     choices: ["Rocky Balboa", "John Rambo", "John Spartan", "Judge Dredd"],
     correctAnswer: "John Rambo",
     image:"assets/images/rambo.gif"
@@ -66,7 +66,7 @@ var questions = [{
 
     // clicks the answer
   $(document).on("click", ".answer-button", function(e) {
-    game.clicked(e);
+    game.checkAnswer(e);
   });
   
 
@@ -91,7 +91,9 @@ var questions = [{
       screen.html("<h2>" + questions[this.currentQuestion].question + "</h2>");
       
       for (var i = 0; i<questions[this.currentQuestion].choices.length; i++){
-        screen.append("<button class='answer-button' id='button'" + "data-name=" + questions[this.currentQuestion].choices[i] + ">" + questions[this.currentQuestion].choices[i] + "</button>");
+        var nameProperty = questions[this.currentQuestion].choices[i].replace(/\s+/g, '');
+        screen.append("<button class='answer-button' id='button' name=" + nameProperty + 
+        ">" + questions[this.currentQuestion].choices[i] + "</button>");
       }
     },
     nextQuestion: function(){
@@ -122,15 +124,17 @@ var questions = [{
       screen.append("<h3>Correct Answers: " + game.correct + "</h3>");
       screen.append("<h3>Incorrect Answers: " + game.incorrect + "</h3>");
       screen.append("<h3>Unanswered: " + (questions.length - (game.incorrect + game.correct)) + "</h3>");
-      screen.append("<br><button id='start-over'>Start Over?</button>");
+      screen.append("<br><button id='start-over'>Play Again?</button>");
     },
-    clicked: function(e) {
+    checkAnswer: function(e) {
       clearInterval(timer);
-  
-      if ($(e.target).data("name") === questions[this.currentQuestion].correctAnswer){
+      // console.log(questions[this.currentQuestion].correctAnswer);
+      var selectedAnswer = $(e.target).attr("name");
+      // console.log(selectedAnswer);
+      if (selectedAnswer === (questions[this.currentQuestion].correctAnswer).replace(/\s+/g, '')){
         this.answeredCorrectly();
       } else {
-        this.answeredIncorrectly();
+        this.answeredIncorrectly(); 
       }
     },
     answeredIncorrectly: function() {
@@ -146,12 +150,12 @@ var questions = [{
         setTimeout(game.nextQuestion, 3 * 1000);
       }
     },answeredCorrectly: function(){
-      clearInterval(timer);
       game.correct++;
+      clearInterval(timer);
       screen.html("<h2>Correct!</h2>");
       screen.append('<img src="' + questions[game.currentQuestion].image + '" />');
   
-      if (game.currentQuestion === questions.length){
+      if (game.currentQuestion === questions.length - 1){
         setTimeout(game.results, 3 * 1000);
       } else {
         setTimeout(game.nextQuestion, 3 * 1000);
